@@ -21,9 +21,11 @@ export function drawLabel(
 
   let y = LABEL.topMargin;
 
-  const textHeight = (font: string): number => {
+  // Uses actual text metrics (mirrors Python's textbbox); the text must be
+  // measured with the same font it will be drawn in.
+  const textHeight = (text: string, font: string): number => {
     ctx.font = font;
-    const metrics = ctx.measureText("Mg");
+    const metrics = ctx.measureText(text);
     const measured = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
     const fallback = parseInt(font.match(/(\d+)px/)![1], 10);
     return Math.max(measured, fallback);
@@ -32,13 +34,13 @@ export function drawLabel(
   const left = (text: string, font: string, spacing = 4) => {
     ctx.font = font;
     ctx.fillText(text, LABEL.leftMargin, y);
-    y += textHeight(font) + spacing;
+    y += textHeight(text, font) + spacing;
   };
 
   const centered = (text: string, font: string, spacing = 4) => {
     ctx.font = font;
     ctx.fillText(text, Math.floor((LABEL.width - ctx.measureText(text).width) / 2), y);
-    y += textHeight(font) + spacing;
+    y += textHeight(text, font) + spacing;
   };
 
   const twoColumns = (leftText: string, rightText: string, font: string, spacing = 4) => {
@@ -49,7 +51,7 @@ export function drawLabel(
       LABEL.width - LABEL.rightMargin - ctx.measureText(rightText).width,
       y,
     );
-    y += textHeight(leftText) + spacing;
+    y += textHeight(leftText, font) + spacing;
   };
 
   const packedOn = formatDate(packDate);

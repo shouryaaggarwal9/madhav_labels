@@ -18,14 +18,19 @@ import { generateTSPL } from "@/lib/printer";
 export function LabelPrinter() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { queue, add, updateQuantity, setQuantity, remove } = useLabelQueue();
-  const { device, isPrinting, error, connect, print } = useWebUsb();
+  const { device, isPrinting, error, connect, print, setError } = useWebUsb();
 
   const handlePrint = async () => {
     if (!device) {
       await connect();
       return;
     }
-    await print(generateTSPL(queue));
+    try {
+      await print(generateTSPL(queue));
+    } catch (err) {
+      console.error("Label generation error:", err);
+      setError(err instanceof Error ? err.message : "Failed to generate labels");
+    }
   };
 
   const handleAddCustom = (item: StoreItem) => {

@@ -65,5 +65,5 @@ export function useWebUsb() {
     [device],
   );
 
-  return { device, isPrinting, error, connect, print } as const;
+  return { device, isPrinting, error, connect, print, setError } as const;
 }
