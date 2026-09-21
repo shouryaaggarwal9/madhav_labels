@@ -5,7 +5,7 @@ import "./globals.css";
 
 // Next.js 14+ requires metadata and viewport to be exported separately
 export const metadata: Metadata = {
-  title: "Store Label Printer",
+  title: "Madhav Label Printer",
   description: "WebUSB thermal label printer for Madhav Departmental Store",
   applicationName: "Madhav Labels",
   appleWebApp: {
@@ -37,7 +37,9 @@ export default function RootLayout({
           {/* App Header */}
           <header className="shrink-0 bg-slate-900 px-4 py-4 text-white shadow-md z-20 relative flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Madhav Labels</h1>
+              <h1 className="text-xl font-bold tracking-tight">
+                Madhav Labels
+              </h1>
               <p className="text-xs text-slate-400">Retsol R220 Printer</p>
             </div>
             <InstallButton />
