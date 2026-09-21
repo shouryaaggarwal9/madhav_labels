@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import InstallButton from "./install-button";
-import RegisterSW from "./register-sw";
+import InstallButton from "@/components/pwa/install-button";
+import RegisterSW from "@/components/pwa/register-sw";
 import "./globals.css";
 
 // Next.js 14+ requires metadata and viewport to be exported separately

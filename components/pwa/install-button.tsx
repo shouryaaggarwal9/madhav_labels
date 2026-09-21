@@ -1,36 +1,63 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+// --- Client-only state read via useSyncExternalStore -------------------------
+// Snapshots must be cached between calls (React compares them), so the
+// module-level caches below are computed lazily on first read.
+
+let cachedIsIOS: boolean | undefined;
+function getIsIOS(): boolean {
+  if (cachedIsIOS === undefined) {
+    cachedIsIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  }
+  return cachedIsIOS;
+}
+
+const subscribeNoop = () => () => {};
+
+let cachedStandalone: boolean | undefined;
+function readStandalone(): boolean {
+  const nav = navigator as Navigator & { standalone?: boolean };
+  return window.matchMedia("(display-mode: standalone)").matches || nav.standalone === true;
+}
+function getStandalone(): boolean {
+  if (cachedStandalone === undefined) cachedStandalone = readStandalone();
+  return cachedStandalone;
+}
+function subscribeStandalone(onChange: () => void): () => void {
+  const mediaQuery = window.matchMedia("(display-mode: standalone)");
+  const handler = () => {
+    cachedStandalone = readStandalone();
+    onChange();
+  };
+  mediaQuery.addEventListener("change", handler);
+  return () => mediaQuery.removeEventListener("change", handler);
+}
+
 export default function InstallButton() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  // Start hidden so server render (and the flash before hydration) shows nothing;
-  // it only appears once we know the app is not already installed.
-  const [installed, setInstalled] = useState(true);
-  const [isIOS, setIsIOS] = useState(false);
+  const [justInstalled, setJustInstalled] = useState(false);
   const [showIOSHelp, setShowIOSHelp] = useState(false);
 
-  useEffect(() => {
-    const nav = navigator as Navigator & { standalone?: boolean };
-    const standalone =
-      window.matchMedia("(display-mode: standalone)").matches || nav.standalone === true;
-    setInstalled(standalone);
-    setIsIOS(
-      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
-    );
+  const isIOS = useSyncExternalStore(subscribeNoop, getIsIOS, () => false);
+  const standalone = useSyncExternalStore(subscribeStandalone, getStandalone, () => false);
+  const installed = standalone || justInstalled;
 
+  useEffect(() => {
     const onPrompt = (e: Event) => {
       // Prevent the browser's mini-infobar so our in-app button controls install.
       e.preventDefault();
       setInstallEvent(e as BeforeInstallPromptEvent);
     };
-    const onInstalled = () => setInstalled(true);
+    const onInstalled = () => setJustInstalled(true);
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
     return () => {
@@ -45,7 +72,7 @@ export default function InstallButton() {
     if (installEvent) {
       await installEvent.prompt();
       const { outcome } = await installEvent.userChoice;
-      if (outcome === "accepted") setInstalled(true);
+      if (outcome === "accepted") setJustInstalled(true);
       setInstallEvent(null);
       return;
     }

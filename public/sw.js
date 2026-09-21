@@ -1,5 +1,4 @@
 /* Madhav Labels service worker — makes the installed PWA work offline. */
-/* eslint-disable no-restricted-globals */
 
 const VERSION = "v1";
 const STATIC_CACHE = `madhav-static-${VERSION}`;
@@ -13,7 +12,7 @@ self.addEventListener("install", (event) => {
       try {
         // Warm the app shell so the first offline launch already works.
         await cache.addAll([SHELL_URL, "/manifest.webmanifest"]);
-      } catch (err) {
+      } catch {
         // Best-effort; the navigation handler caches the shell on first visit.
       }
       await self.skipWaiting();
@@ -56,7 +55,7 @@ self.addEventListener("fetch", (event) => {
             await cache.put(request, fresh.clone());
           }
           return fresh;
-        } catch (err) {
+        } catch {
           const cache = await caches.open(PAGE_CACHE);
           const cached = (await cache.match(request)) || (await cache.match(SHELL_URL));
           if (cached) return cached;
@@ -89,7 +88,7 @@ self.addEventListener("fetch", (event) => {
           const fresh = await fetch(request);
           if (fresh && fresh.ok) await cache.put(request, fresh.clone());
           return fresh;
-        } catch (err) {
+        } catch {
           return new Response("", { status: 504, statusText: "Offline" });
         }
       })(),
@@ -102,7 +101,7 @@ self.addEventListener("fetch", (event) => {
     (async () => {
       try {
         return await fetch(request);
-      } catch (err) {
+      } catch {
         const cache = await caches.open(PAGE_CACHE);
         const hit = await cache.match(request);
         if (hit) return hit;

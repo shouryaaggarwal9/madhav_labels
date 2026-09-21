@@ -1,0 +1,108 @@
+export interface StoreItem {
+  id: string;
+  name: string;
+  /** Pack weight in grams. */
+  weight: number;
+  /** Maximum retail price in rupees. */
+  mrp: number;
+  /** Shelf life in months. */
+  shelfLife: number;
+}
+
+/**
+ * A catalog entry queued for printing with the number of labels to print.
+ * Kept separate from {@link StoreItem} so printing stays decoupled from the
+ * shape of catalog data.
+ */
+export interface QueueItem extends StoreItem {
+  quantity: number;
+}
+
+/** Catalog of every pre-defined item that can be printed. */
+export const catalog: StoreItem[] = [
+  { id: "ARHAR_DAL_500g", name: "ARHAR DAL", weight: 500, mrp: 85, shelfLife: 2 },
+  { id: "ARHAR_DAL_1Kg", name: "ARHAR DAL", weight: 1000, mrp: 170, shelfLife: 2 },
+  { id: "KABULI_CHANA_500g", name: "KABULI CHANA", weight: 500, mrp: 60, shelfLife: 2 },
+  { id: "KABULI_CHANA_1Kg", name: "KABULI CHANA", weight: 1000, mrp: 120, shelfLife: 2 },
+  { id: "KALA_CHANA_500g", name: "KALA CHANA", weight: 500, mrp: 55, shelfLife: 2 },
+  { id: "KALA_CHANA_1Kg", name: "KALA CHANA", weight: 1000, mrp: 110, shelfLife: 2 },
+  { id: "CHANA_DAL_500g", name: "CHANA DAL", weight: 500, mrp: 55, shelfLife: 2 },
+  { id: "CHANA_DAL_1Kg", name: "CHANA DAL", weight: 1000, mrp: 110, shelfLife: 2 },
+  { id: "LAL_MASOOR_500g", name: "LAL MASOOR", weight: 500, mrp: 55, shelfLife: 2 },
+  { id: "LAL_MASOOR_1Kg", name: "LAL MASOOR", weight: 1000, mrp: 110, shelfLife: 2 },
+  { id: "MOONG_SABUT_1Kg", name: "MOONG SABUT", weight: 1000, mrp: 140, shelfLife: 2 },
+  { id: "MOONG_SABUT_500g", name: "MOONG SABUT", weight: 500, mrp: 70, shelfLife: 2 },
+  { id: "MOONG_DHULI_1Kg", name: "MOONG DHULI", weight: 1000, mrp: 140, shelfLife: 2 },
+  { id: "MOONG_DHULI_500g", name: "MOONG DHULI", weight: 500, mrp: 70, shelfLife: 2 },
+  { id: "MOONG_CHILKA_1Kg", name: "MOONG CHILKA", weight: 1000, mrp: 140, shelfLife: 2 },
+  { id: "MOONG_CHILKA_500g", name: "MOONG CHILKA", weight: 500, mrp: 70, shelfLife: 2 },
+  { id: "URAD_SABUT_1Kg", name: "URAD SABUT", weight: 1000, mrp: 150, shelfLife: 2 },
+  { id: "URAD_SABUT_500g", name: "URAD SABUT", weight: 500, mrp: 75, shelfLife: 2 },
+  { id: "URAD_DHULI_1Kg", name: "URAD DHULI", weight: 1000, mrp: 180, shelfLife: 2 },
+  { id: "URAD_DHULI_500g", name: "URAD DHULI", weight: 500, mrp: 90, shelfLife: 2 },
+  { id: "URAD_CHILKA_1Kg", name: "URAD CHILKA", weight: 1000, mrp: 150, shelfLife: 2 },
+  { id: "URAD_CHILKA_500g", name: "URAD CHILKA", weight: 500, mrp: 75, shelfLife: 2 },
+  { id: "SAFED_MATAR_500g", name: "SAFED MATAR", weight: 500, mrp: 40, shelfLife: 2 },
+  { id: "SAFED_TIL_250g", name: "SAFED TIL", weight: 250, mrp: 60, shelfLife: 2 },
+  { id: "SAFED_TIL_100g", name: "SAFED TIL", weight: 100, mrp: 25, shelfLife: 2 },
+  { id: "SAFED_LOBIYA_500g", name: "SAFED LOBIYA", weight: 500, mrp: 65, shelfLife: 2 },
+  { id: "RAJMAH_CHITRA_1Kg", name: "RAJMAH CHITRA", weight: 1000, mrp: 170, shelfLife: 2 },
+  { id: "RAJMAH_CHITRA_500g", name: "RAJMAH CHITRA", weight: 500, mrp: 85, shelfLife: 2 },
+  { id: "RAJMAH_LAL_500g", name: "RAJMAH LAL", weight: 500, mrp: 95, shelfLife: 2 },
+  { id: "MOTA_CHIDWA_500g", name: "MOTA CHIDWA", weight: 500, mrp: 40, shelfLife: 2 },
+  { id: "KALI_MASOOR_1Kg", name: "KALI MASOOR", weight: 1000, mrp: 120, shelfLife: 2 },
+  { id: "KALI_MASOOR_500g", name: "KALI MASOOR", weight: 500, mrp: 60, shelfLife: 2 },
+  { id: "KALI_MASRI_500g", name: "KALI MASRI", weight: 500, mrp: 75, shelfLife: 2 },
+  { id: "LAL_MASRI_500g", name: "LAL MASRI", weight: 500, mrp: 75, shelfLife: 2 },
+  { id: "BADAM_GIRI_500g", name: "BADAM GIRI", weight: 500, mrp: 620, shelfLife: 2 },
+  { id: "BADAM_GIRI_250g", name: "BADAM GIRI", weight: 250, mrp: 310, shelfLife: 2 },
+  { id: "BADAM_GIRI_100g", name: "BADAM GIRI", weight: 100, mrp: 130, shelfLife: 2 },
+  { id: "KAJU_500g", name: "KAJU", weight: 500, mrp: 650, shelfLife: 2 },
+  { id: "KAJU_250g", name: "KAJU", weight: 250, mrp: 325, shelfLife: 2 },
+  { id: "KAJU_100g", name: "KAJU", weight: 100, mrp: 130, shelfLife: 2 },
+  { id: "KISHMISH_250g", name: "KISHMISH", weight: 250, mrp: 175, shelfLife: 2 },
+  { id: "KISHMISH_100g", name: "KISHMISH", weight: 100, mrp: 70, shelfLife: 2 },
+  { id: "PISTA_250g", name: "PISTA", weight: 250, mrp: 500, shelfLife: 2 },
+  { id: "PISTA_100g", name: "PISTA", weight: 100, mrp: 200, shelfLife: 2 },
+  { id: "AKHROT_GIRI_500g", name: "AKHROT GIRI", weight: 500, mrp: 1000, shelfLife: 2 },
+  { id: "AKHROT_GIRI_250g", name: "AKHROT GIRI", weight: 250, mrp: 500, shelfLife: 2 },
+  { id: "AKHROT_GIRI_100g", name: "AKHROT GIRI", weight: 100, mrp: 200, shelfLife: 2 },
+  { id: "CHUARA_250g", name: "CHUARA", weight: 250, mrp: 100, shelfLife: 2 },
+  { id: "CHUARA_100g", name: "CHUARA", weight: 100, mrp: 40, shelfLife: 2 },
+  { id: "GUD_500g", name: "GUD", weight: 500, mrp: 45, shelfLife: 2 },
+  { id: "BHUNA_CHANA_200g", name: "BHUNA CHANA", weight: 200, mrp: 50, shelfLife: 2 },
+  { id: "KACHI_MOONGFALI_500g", name: "KACHI MOONGFALI", weight: 500, mrp: 110, shelfLife: 2 },
+  { id: "KACHI_MOONGFALI_250g", name: "KACHI MOONGFALI", weight: 250, mrp: 55, shelfLife: 2 },
+  { id: "FRYMES_200g", name: "FRYMES", weight: 200, mrp: 25, shelfLife: 2 },
+  { id: "FRYMES_250g", name: "FRYMES", weight: 250, mrp: 30, shelfLife: 2 },
+  { id: "GOL_GAPPE_200g", name: "GOL GAPPE", weight: 200, mrp: 40, shelfLife: 2 },
+  { id: "MIX_DAL_500g", name: "MIX DAL", weight: 500, mrp: 80, shelfLife: 2 },
+  { id: "MISHRI_DANA_250g", name: "MISHRI DANA", weight: 250, mrp: 25, shelfLife: 2 },
+  { id: "MAKHANA_50g", name: "MAKHANA", weight: 50, mrp: 80, shelfLife: 3 },
+  { id: "MAKHANA_100g", name: "MAKHANA", weight: 100, mrp: 160, shelfLife: 3 },
+  { id: "MAKHANA_250g", name: "MAKHANA", weight: 250, mrp: 400, shelfLife: 3 },
+  { id: "SUGAR_1Kg", name: "SUGAR", weight: 1000, mrp: 65, shelfLife: 3 },
+  { id: "ALOO_CHIPS_200g", name: "ALOO CHIPS", weight: 200, mrp: 40, shelfLife: 2 },
+  { id: "ALOO_PENNE_200g", name: "ALOO PENNE", weight: 200, mrp: 40, shelfLife: 2 },
+  { id: "ROASTED_CHAULAI_200g", name: "ROASTED CHAULAI", weight: 200, mrp: 50, shelfLife: 3 },
+  { id: "KAJU_210N_250g", name: "KAJU (210N)", weight: 250, mrp: 375, shelfLife: 2 },
+  { id: "KAJU_210N_500g", name: "KAJU (210N)", weight: 500, mrp: 750, shelfLife: 2 },
+  { id: "BREAKFAST_MIX_500g", name: "BREAKFAST MIX", weight: 500, mrp: 380, shelfLife: 2 },
+  { id: "BOORA_500g", name: "BOORA", weight: 500, mrp: 40, shelfLife: 3 },
+  { id: "PREM_BASMATI_RICE_1Kg", name: "BASMATI RICE (PREM)", weight: 1000, mrp: 120, shelfLife: 3 },
+  { id: "TEJ_PATTA_20g", name: "TEJ PATTA", weight: 20, mrp: 15, shelfLife: 2 },
+  { id: "TEJ_PATTA_50g", name: "TEJ PATTA", weight: 50, mrp: 35, shelfLife: 2 },
+  { id: "SAMBHAK_CHAWAL_250g", name: "SAMBHAK CHAWAL", weight: 250, mrp: 55, shelfLife: 3 },
+  { id: "FLAX_SEEDS_250g", name: "FLAX SEEDS", weight: 250, mrp: 50, shelfLife: 3 },
+  { id: "GOLA_BURADA_100g", name: "GOLA BURADA", weight: 100, mrp: 40, shelfLife: 3 },
+  { id: "GOLA_BURADA_250g", name: "GOLA BURADA", weight: 250, mrp: 100, shelfLife: 3 },
+  { id: "CHIRONJI_50g", name: "CHIRONJI", weight: 50, mrp: 110, shelfLife: 3 },
+  { id: "CHIRONJI_100g", name: "CHIRONJI", weight: 100, mrp: 220, shelfLife: 3 },
+  { id: "KHARBOOJA_GIRI_50g", name: "KHARBOOJA GIRI", weight: 50, mrp: 50, shelfLife: 3 },
+  { id: "KHARBOOJA_GIRI_100g", name: "KHARBOOJA GIRI", weight: 100, mrp: 100, shelfLife: 3 },
+  { id: "RICE_FLAKES_200g", name: "RICE FLAKES", weight: 200, mrp: 50, shelfLife: 3 },
+  { id: "RICE_JALEBI_200g", name: "RICE JALEBI", weight: 200, mrp: 50, shelfLife: 3 },
+  { id: "RICE_PAPAD_200g", name: "RICE PAPAD", weight: 200, mrp: 40, shelfLife: 3 },
+  { id: "SABUTDANA_COIN_200g", name: "SABUTDANA COIN", weight: 200, mrp: 50, shelfLife: 3 },
+  { id: "SABUTDANA_SHISHA_200g", name: "SABUTDANA SHISHA", weight: 200, mrp: 45, shelfLife: 3 },
+];
