@@ -81,7 +81,7 @@ export const catalog: StoreItem[] = [
   { id: "MAKHANA_50g", name: "MAKHANA", weight: 50, mrp: 80, shelfLife: 3 },
   { id: "MAKHANA_100g", name: "MAKHANA", weight: 100, mrp: 160, shelfLife: 3 },
   { id: "MAKHANA_250g", name: "MAKHANA", weight: 250, mrp: 400, shelfLife: 3 },
-  { id: "SUGAR_1Kg", name: "SUGAR", weight: 1000, mrp: 65, shelfLife: 3 },
+  { id: "SUGAR_1Kg", name: "SUGAR", weight: 1000, mrp: 70, shelfLife: 3 },
   { id: "ALOO_CHIPS_200g", name: "ALOO CHIPS", weight: 200, mrp: 40, shelfLife: 2 },
   { id: "ALOO_PENNE_200g", name: "ALOO PENNE", weight: 200, mrp: 40, shelfLife: 2 },
   { id: "ROASTED_CHAULAI_200g", name: "ROASTED CHAULAI", weight: 200, mrp: 50, shelfLife: 3 },
