@@ -72,6 +72,7 @@ export function useWebUsb() {
   const deviceRef = useRef<USBDevice | null>(null);
   const printingRef = useRef(false);
   const restoringRef = useRef(false);
+  const warnedRef = useRef(false);
 
   const applyDevice = useCallback((next: USBDevice | null) => {
     deviceRef.current = next;
@@ -88,6 +89,29 @@ export function useWebUsb() {
     }
     await target.claimInterface(0);
   }, []);
+
+  /**
+   * A freshly (re)plugged printer is sometimes not ready the instant the
+   * browser reports it, so `open()` can reject with a transient error. Retry a
+   * few times before giving up - the next `connect` event or poll tick will
+   * try again anyway.
+   */
+  const openAndClaimWithRetry = useCallback(
+    async (target: USBDevice, attempts = 4) => {
+      for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+          await openAndClaim(target);
+          return;
+        } catch (err) {
+          if (attempt === attempts) {
+            throw err;
+          }
+          await new Promise((resolve) => window.setTimeout(resolve, 300));
+        }
+      }
+    },
+    [openAndClaim],
+  );
 
   /** Best-effort release of a device we are finished with. */
   const closeDevice = useCallback(async (target: USBDevice) => {
@@ -108,10 +132,11 @@ export function useWebUsb() {
   /**
    * Re-attaches to a printer this origin is already authorised to use, so the
    * app reconnects on every launch without showing the device chooser.
+   * Resolves to true when a printer is attached.
    */
-  const restore = useCallback(async () => {
+  const restore = useCallback(async (): Promise<boolean> => {
     if (!navigator.usb || deviceRef.current || restoringRef.current) {
-      return;
+      return false;
     }
     restoringRef.current = true;
     try {
@@ -119,21 +144,27 @@ export function useWebUsb() {
       const devices = await navigator.usb.getDevices();
       const target =
         devices.find((candidate) => identity !== null && matchesIdentity(candidate, identity)) ??
-        (identity === null && devices.length === 1 ? devices[0] : undefined);
+        (devices.length === 1 ? devices[0] : undefined);
 
       if (!target) {
-        return;
+        return false;
       }
-      await openAndClaim(target);
+      await openAndClaimWithRetry(target);
       rememberIdentity(target);
       applyDevice(target);
       setError(null);
+      warnedRef.current = false;
+      return true;
     } catch (err) {
-      console.warn("Automatic printer reconnect failed:", err);
+      if (!warnedRef.current) {
+        console.warn("Automatic printer reconnect failed:", err);
+        warnedRef.current = true;
+      }
+      return false;
     } finally {
       restoringRef.current = false;
     }
-  }, [applyDevice, openAndClaim]);
+  }, [applyDevice, openAndClaimWithRetry]);
 
   // Auto-attach on load, and keep tabs listening for the cable being
   // unplugged (disconnect) or plugged back in (connect).
@@ -151,12 +182,11 @@ export function useWebUsb() {
       }
     };
 
-    const handleConnect = (event: USBConnectionEvent) => {
-      if (deviceRef.current) {
-        return;
-      }
-      const identity = readIdentity();
-      if (identity === null || matchesIdentity(event.device, identity)) {
+    const handleConnect = () => {
+      // restore() re-queries getDevices() itself, so there is no need to trust
+      // event.device here - that keeps reconnection working even when a device
+      // re-enumerates with a different identity after being replugged.
+      if (!deviceRef.current) {
         void restore();
       }
     };
@@ -180,6 +210,20 @@ export function useWebUsb() {
     };
   }, [applyDevice, closeDevice, restore]);
 
+  // Safety net: `connect` events can be missed (and a freshly replugged device
+  // may not be ready yet), so while we have no printer we retry on a slow
+  // interval. Replug the cable and the printer reattaches on its own, with no
+  // need to open the device chooser again.
+  useEffect(() => {
+    if (device) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      void restore();
+    }, 2000);
+    return () => window.clearInterval(timer);
+  }, [device, restore]);
+
   const connect = useCallback(async () => {
     try {
       if (!navigator.usb) {
@@ -193,9 +237,16 @@ export function useWebUsb() {
         await closeDevice(previous);
       }
 
+      // The browser usually still holds the permission we were granted earlier,
+      // so try a silent reconnect first and only fall back to the chooser if
+      // that genuinely is not possible.
+      if (await restore()) {
+        return;
+      }
+
       // No vendor/product filter: any paired printer is accepted.
       const selected = await navigator.usb.requestDevice({ filters: [] });
-      await openAndClaim(selected);
+      await openAndClaimWithRetry(selected);
       rememberIdentity(selected);
       applyDevice(selected);
       setError(null);
@@ -203,7 +254,7 @@ export function useWebUsb() {
       console.error("USB connection error:", err);
       setError(err instanceof Error ? err.message : "Failed to connect to printer");
     }
-  }, [applyDevice, closeDevice, openAndClaim]);
+  }, [applyDevice, closeDevice, openAndClaimWithRetry, restore]);
 
   const print = useCallback(
     async (data: Uint8Array<ArrayBuffer>) => {
