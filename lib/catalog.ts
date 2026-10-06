@@ -94,14 +94,14 @@ export const catalog: StoreItem[] = [
     id: "MOONG_SABUT_1Kg",
     name: "MOONG SABUT",
     weight: 1000,
-    mrp: 140,
+    mrp: 130,
     shelfLife: 2,
   },
   {
     id: "MOONG_SABUT_500g",
     name: "MOONG SABUT",
     weight: 500,
-    mrp: 70,
+    mrp: 65,
     shelfLife: 2,
   },
   {
@@ -136,14 +136,14 @@ export const catalog: StoreItem[] = [
     id: "URAD_SABUT_1Kg",
     name: "URAD SABUT",
     weight: 1000,
-    mrp: 150,
+    mrp: 160,
     shelfLife: 2,
   },
   {
     id: "URAD_SABUT_500g",
     name: "URAD SABUT",
     weight: 500,
-    mrp: 75,
+    mrp: 80,
     shelfLife: 2,
   },
   {
@@ -164,14 +164,14 @@ export const catalog: StoreItem[] = [
     id: "URAD_CHILKA_1Kg",
     name: "URAD CHILKA",
     weight: 1000,
-    mrp: 150,
+    mrp: 160,
     shelfLife: 2,
   },
   {
     id: "URAD_CHILKA_500g",
     name: "URAD CHILKA",
     weight: 500,
-    mrp: 75,
+    mrp: 80,
     shelfLife: 2,
   },
   {
@@ -315,7 +315,7 @@ export const catalog: StoreItem[] = [
   },
   { id: "CHUARA_250g", name: "CHUARA", weight: 250, mrp: 100, shelfLife: 2 },
   { id: "CHUARA_100g", name: "CHUARA", weight: 100, mrp: 40, shelfLife: 2 },
-  { id: "GUD_500g", name: "GUD", weight: 500, mrp: 45, shelfLife: 2 },
+  { id: "GUD_500g", name: "GUD", weight: 500, mrp: 50, shelfLife: 2 },
   {
     id: "BHUNA_CHANA_200g",
     name: "BHUNA CHANA",
@@ -400,7 +400,7 @@ export const catalog: StoreItem[] = [
     mrp: 380,
     shelfLife: 2,
   },
-  { id: "BOORA_500g", name: "BOORA", weight: 500, mrp: 40, shelfLife: 3 },
+  { id: "BOORA_500g", name: "BOORA", weight: 500, mrp: 45, shelfLife: 3 },
   {
     id: "PREM_BASMATI_RICE_1Kg",
     name: "BASMATI RICE (PREM)",
