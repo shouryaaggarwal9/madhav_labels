@@ -315,7 +315,7 @@ export const catalog: StoreItem[] = [
   },
   { id: "CHUARA_250g", name: "CHUARA", weight: 250, mrp: 100, shelfLife: 2 },
   { id: "CHUARA_100g", name: "CHUARA", weight: 100, mrp: 40, shelfLife: 2 },
-  { id: "GUD_500g", name: "GUD", weight: 500, mrp: 50, shelfLife: 2 },
+  { id: "GUD_500g", name: "GUD", weight: 500, mrp: 55, shelfLife: 2 },
   {
     id: "BHUNA_CHANA_200g",
     name: "BHUNA CHANA",
@@ -354,7 +354,7 @@ export const catalog: StoreItem[] = [
     mrp: 25,
     shelfLife: 2,
   },
-  { id: "MAKHANA_50g", name: "MAKHANA", weight: 50, mrp: 75, shelfLife: 3 },
+  { id: "MAKHANA_50g", name: "MAKHANA", weight: 50, mrp: 80, shelfLife: 3 },
   { id: "MAKHANA_100g", name: "MAKHANA", weight: 100, mrp: 150, shelfLife: 3 },
   { id: "MAKHANA_250g", name: "MAKHANA", weight: 250, mrp: 375, shelfLife: 3 },
   { id: "SUGAR_1Kg", name: "SUGAR", weight: 1000, mrp: 70, shelfLife: 3 },
@@ -400,7 +400,7 @@ export const catalog: StoreItem[] = [
     mrp: 380,
     shelfLife: 2,
   },
-  { id: "BOORA_500g", name: "BOORA", weight: 500, mrp: 45, shelfLife: 3 },
+  { id: "BOORA_500g", name: "BOORA", weight: 500, mrp: 50, shelfLife: 3 },
   {
     id: "PREM_BASMATI_RICE_1Kg",
     name: "BASMATI RICE (PREM)",
