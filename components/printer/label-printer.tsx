@@ -17,7 +17,7 @@ import { generateTSPL } from "@/lib/printer";
  */
 export function LabelPrinter() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { queue, add, updateQuantity, setQuantity, remove } = useLabelQueue();
+  const { queue, add, updateQuantity, setQuantity, remove, clear } = useLabelQueue();
   const { device, isPrinting, error, connect, print, setError } = useWebUsb();
 
   const handlePrint = async () => {
@@ -74,6 +74,7 @@ export function LabelPrinter() {
           onSetQuantity={setQuantity}
           onUpdateQuantity={updateQuantity}
           onRemove={remove}
+          onClear={clear}
         />
       </div>
 

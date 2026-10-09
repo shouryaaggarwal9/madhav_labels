@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { formatWeight } from "@/lib/format";
 import type { QueueItem } from "@/lib/catalog";
@@ -44,6 +44,49 @@ function QuantityInput({
 }
 
 /**
+ * Destructive "clear everything" action that requires a second tap to
+ * confirm, so a stray touch while scrolling never wipes the queue.
+ */
+function ClearQueueButton({ onClear }: { onClear: () => void }) {
+  const [isConfirming, setIsConfirming] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  const cancelConfirm = () => {
+    if (timer.current !== null) {
+      window.clearTimeout(timer.current);
+      timer.current = null;
+    }
+    setIsConfirming(false);
+  };
+
+  useEffect(() => cancelConfirm, []);
+
+  const handleClick = () => {
+    if (!isConfirming) {
+      setIsConfirming(true);
+      timer.current = window.setTimeout(cancelConfirm, 3000);
+      return;
+    }
+    cancelConfirm();
+    onClear();
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      aria-label={isConfirming ? "Tap again to clear the queue" : "Clear queue"}
+      className={`shrink-0 text-xs font-bold uppercase tracking-wider px-3 py-2 rounded-lg transition-colors ${
+        isConfirming
+          ? "bg-red-600 text-white hover:bg-red-700"
+          : "bg-red-50 text-red-600 hover:bg-red-100"
+      }`}
+    >
+      {isConfirming ? "Tap again to clear" : "Clear list"}
+    </button>
+  );
+}
+
+/**
  * The list of queued labels with quantity steppers and remove actions.
  */
 export function QueueList({
@@ -51,11 +94,13 @@ export function QueueList({
   onSetQuantity,
   onUpdateQuantity,
   onRemove,
+  onClear,
 }: {
   queue: QueueItem[];
   onSetQuantity: (id: string, quantity: number) => void;
   onUpdateQuantity: (id: string, delta: number) => void;
   onRemove: (id: string) => void;
+  onClear: () => void;
 }) {
   if (queue.length === 0) {
     return (
@@ -63,8 +108,17 @@ export function QueueList({
     );
   }
 
+  const totalLabels = queue.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          {queue.length} {queue.length === 1 ? "item" : "items"} • {totalLabels}{" "}
+          {totalLabels === 1 ? "label" : "labels"}
+        </p>
+        <ClearQueueButton onClear={onClear} />
+      </div>
       {queue.map((item) => (
         <div
           key={item.id}
