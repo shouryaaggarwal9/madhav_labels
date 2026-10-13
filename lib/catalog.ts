@@ -52,14 +52,14 @@ export const catalog: StoreItem[] = [
     id: "KALA_CHANA_500g",
     name: "KALA CHANA",
     weight: 500,
-    mrp: 60,
+    mrp: 65,
     shelfLife: 2,
   },
   {
     id: "KALA_CHANA_1Kg",
     name: "KALA CHANA",
     weight: 1000,
-    mrp: 120,
+    mrp: 130,
     shelfLife: 2,
   },
   {
