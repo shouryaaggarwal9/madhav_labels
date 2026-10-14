@@ -351,7 +351,7 @@ export const catalog: StoreItem[] = [
     id: "MISHRI_DANA_250g",
     name: "MISHRI DANA",
     weight: 250,
-    mrp: 25,
+    mrp: 30,
     shelfLife: 2,
   },
   { id: "MAKHANA_50g", name: "MAKHANA", weight: 50, mrp: 80, shelfLife: 3 },
