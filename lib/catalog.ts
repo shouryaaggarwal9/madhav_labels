@@ -346,7 +346,7 @@ export const catalog: StoreItem[] = [
     mrp: 40,
     shelfLife: 2,
   },
-  { id: "MIX_DAL_500g", name: "MIX DAL", weight: 500, mrp: 80, shelfLife: 2 },
+  { id: "MIX_DAL_500g", name: "MIX DAL", weight: 500, mrp: 90, shelfLife: 2 },
   {
     id: "MISHRI_DANA_250g",
     name: "MISHRI DANA",
