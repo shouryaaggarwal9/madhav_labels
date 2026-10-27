@@ -400,7 +400,7 @@ export const catalog: StoreItem[] = [
     mrp: 380,
     shelfLife: 2,
   },
-  { id: "BOORA_500g", name: "BOORA", weight: 500, mrp: 50, shelfLife: 3 },
+  { id: "BOORA_500g", name: "BOORA", weight: 500, mrp: 60, shelfLife: 3 },
   {
     id: "PREM_BASMATI_RICE_1Kg",
     name: "BASMATI RICE (PREM)",
