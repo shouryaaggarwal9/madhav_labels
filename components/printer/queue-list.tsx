@@ -102,23 +102,22 @@ export function QueueList({
   onRemove: (id: string) => void;
   onClear: () => void;
 }) {
-  if (queue.length === 0) {
-    return (
-      <p className="text-center text-sm text-slate-400 mt-10 font-medium">Queue is empty</p>
-    );
-  }
-
+  // The total stays on screen even with an empty queue: the person packing the
+  // order needs the count at a glance, not only while scrolling the list.
   const totalLabels = queue.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="sticky -top-4 z-10 -mx-4 -mt-4 px-4 pt-4 pb-3 bg-slate-50 flex items-center justify-between gap-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
           {queue.length} {queue.length === 1 ? "item" : "items"} • {totalLabels}{" "}
           {totalLabels === 1 ? "label" : "labels"}
         </p>
-        <ClearQueueButton onClear={onClear} />
+        {queue.length > 0 && <ClearQueueButton onClear={onClear} />}
       </div>
+      {queue.length === 0 && (
+        <p className="text-center text-sm text-slate-400 mt-10 font-medium">Queue is empty</p>
+      )}
       {queue.map((item) => (
         <div
           key={item.id}
