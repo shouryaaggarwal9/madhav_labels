@@ -46,10 +46,11 @@ the route handlers in `app/api/`, protected by the sync code.
 
 Sync is deliberately offline-first. localStorage renders the queue and catalog
 immediately and Atlas only replaces them once a request succeeds. If Atlas is
-paused or the internet drops, printing, search and queue edits keep working; a
-strip above the print bar says sync is paused. Local queue edits are pushed when
-the connection returns. A price edited while offline is kept on that device but
-may be replaced by the server's value on reconnect, so edit prices while online.
+paused or the internet drops, printing, search, queue edits and price edits keep
+working; a strip above the print bar says sync is paused. Local queue edits are
+pushed when the connection returns, and unsaved price edits are replayed the same
+way (on the next poll, tab focus, or reconnect), so an edit made offline still
+becomes permanent once the database is reachable again.
 
 Two devices editing the same list at the same time resolve as "last tap wins".
 
