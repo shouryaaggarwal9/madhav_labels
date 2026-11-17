@@ -1,21 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 
 import type { StoreItem } from "@/lib/catalog";
+import { formatWeight } from "@/lib/format";
 
-const SHELF_LIFE_OPTIONS = [
-  { value: 1, label: "1 Month" },
-  { value: 2, label: "2 Months" },
-  { value: 3, label: "3 Months" },
-  { value: 6, label: "6 Months" },
-  { value: 12, label: "1 Year" },
-] as const;
+const subscribeNoop = () => () => {};
 
 /**
- * Bottom-sheet form for permanently changing an item. This is the replacement
- * for editing `lib/catalog.ts` and redeploying: the change is written to Atlas
- * and every device picks it up.
+ * Centered modal for permanently editing an item's price.
+ * Placed cleanly across mobile and desktop via createPortal, keeping the item's
+ * name, weight, and shelf life intact while allowing edits to the price only.
  */
 export function EditItemModal({
   item,
@@ -26,41 +22,71 @@ export function EditItemModal({
   onSave: (item: StoreItem) => void;
   onClose: () => void;
 }) {
-  const [name, setName] = useState(item.name);
-  const [weight, setWeight] = useState(String(item.weight));
-  const [mrp, setMrp] = useState(String(item.mrp));
-  const [shelfLife, setShelfLife] = useState(String(item.shelfLife));
+  const isMounted = useSyncExternalStore(subscribeNoop, () => true, () => false);
+  const [price, setPrice] = useState(String(item.mrp));
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  const numPrice = parseInt(price, 10);
+  const isValid = !isNaN(numPrice) && numPrice > 0;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!name.trim() || !weight || !mrp) return;
+    if (!isValid) return;
 
     onSave({
       ...item,
-      name: name.trim().toUpperCase(),
-      weight: parseInt(weight, 10),
-      mrp: parseInt(mrp, 10),
-      shelfLife: parseInt(shelfLife, 10),
+      mrp: numPrice,
     });
   };
 
-  return (
-    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end justify-center p-4">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-5 mb-4 animate-in slide-in-from-bottom-8">
+  if (!isMounted) return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-5 my-auto animate-in fade-in zoom-in-95 duration-150 relative"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-price-title"
+      >
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Edit item</h2>
-            <p className="text-xs text-slate-500 mt-1">Saved for every device.</p>
+            <h2 id="edit-price-title" className="text-xl font-bold text-slate-800">
+              Edit price
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">Saved for every device.</p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close"
-            className="text-slate-400 hover:text-slate-600 p-1"
+            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="22"
+              height="22"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -74,71 +100,67 @@ export function EditItemModal({
           </button>
         </div>
 
+        {/* Read-only item details */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 mb-4">
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+            Item
+          </div>
+          <div className="font-bold text-slate-800 text-base leading-snug">
+            {item.name}
+          </div>
+          <div className="text-xs text-slate-500 mt-0.5 font-medium">
+            {formatWeight(item.weight)}
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-              Item Name
-            </label>
-            <input
-              required
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full h-12 px-3 border border-slate-300 rounded-lg bg-slate-50 uppercase"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                Weight (grams)
-              </label>
-              <input
-                required
-                type="number"
-                min="1"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                className="w-full h-12 px-3 border border-slate-300 rounded-lg bg-slate-50"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                MRP (₹)
-              </label>
-              <input
-                required
-                type="number"
-                min="1"
-                value={mrp}
-                onChange={(e) => setMrp(e.target.value)}
-                className="w-full h-12 px-3 border border-slate-300 rounded-lg bg-slate-50"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-              Shelf Life (Months)
-            </label>
-            <select
-              value={shelfLife}
-              onChange={(e) => setShelfLife(e.target.value)}
-              className="w-full h-12 px-3 border border-slate-300 rounded-lg bg-slate-50 font-medium text-slate-700"
+            <label
+              htmlFor="edit-item-price"
+              className="block text-xs font-bold text-slate-600 uppercase mb-1.5"
             >
-              {SHELF_LIFE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              Price / MRP (₹)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg pointer-events-none select-none">
+                ₹
+              </span>
+              <input
+                id="edit-item-price"
+                ref={inputRef}
+                required
+                type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                min="1"
+                step="1"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="Enter price"
+                className="w-full h-12 pl-8 pr-4 border border-slate-300 rounded-xl bg-slate-50 text-slate-900 font-bold text-lg outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+              />
+            </div>
           </div>
-          <button
-            type="submit"
-            className="w-full bg-slate-900 text-white font-bold h-12 rounded-lg mt-2 active:scale-95 transition-transform"
-          >
-            Save changes
-          </button>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 h-12 border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-xl active:scale-95 transition-all text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!isValid}
+              className="flex-1 h-12 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl active:scale-95 disabled:active:scale-100 transition-all text-sm shadow-sm"
+            >
+              Confirm
+            </button>
+          </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
