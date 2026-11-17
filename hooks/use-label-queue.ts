@@ -201,6 +201,16 @@ async function pushNow(): Promise<void> {
         settle(local.items, retry.revision);
       } else if (retry.kind === "conflict") {
         adopt(retry.state);
+      } else {
+        schedulePush();
+      }
+      return;
+    }
+
+    if (result.kind === "failed") {
+      const current = readMeta();
+      if (current.dirty) {
+        schedulePush();
       }
     }
   } finally {
@@ -222,15 +232,17 @@ async function refresh(initial: boolean): Promise<void> {
   const local = readMeta();
 
   if (initial) {
-    if (remote.queue.length === 0) {
+    const isUnseededServer =
+      local.revision === null &&
+      remote.revision === 0 &&
+      remote.queue.length === 0 &&
+      local.items.length > 0;
+
+    if (isUnseededServer) {
       // An empty server must not wipe a list built before sync existed: the
       // device that already has the order is the source of truth.
-      if (local.items.length > 0) {
-        writeMeta(local.items, remote.revision, true);
-        void pushNow();
-      } else {
-        writeMeta(EMPTY_QUEUE, remote.revision, false);
-      }
+      writeMeta(local.items, remote.revision, true);
+      void pushNow();
       return;
     }
 
@@ -352,8 +364,12 @@ export function useLabelQueue() {
 
   const clear = useCallback(() => {
     const meta = readMeta();
+    if (pushTimer !== null) {
+      window.clearTimeout(pushTimer);
+      pushTimer = null;
+    }
     writeMeta(EMPTY_QUEUE, meta.revision, true);
-    schedulePush();
+    void pushNow();
   }, []);
 
   return { queue, add, updateQuantity, setQuantity, remove, clear } as const;
